@@ -191,18 +191,4 @@ class Oath {
 		q._changeState(Oath.RESOLVED, data);
 		return q;
 	}
-
-	static normalizeData(data) {
-		return (data != null && data instanceof Oath) ? data._data : data;
-	}
 }
-
-
-
-
-// TEST
-
-const q = Oath.resolve(2)
-	.then(console.log)
-	.then(() => new Oath((res, rej) => rej(55)).catch(console.log))
-	.catch(() => console.log(8));
