@@ -122,11 +122,14 @@ class Oath {
 	_fail(err, fromPrev) {
 		const errCb = (fromPrev ? (this._prev || this) : this)._getClosestErrorHandler();
 
-		if (!errCb) {
-			throw new Error(`Unhandled rejection warning!\n${err}`);
-		}
+		this._changeState(Oath.RESOLVED, null);
 
-		errCb(err);
+		if (!errCb) {
+			const stack = new Error().stack;
+			console.error(`Unhandled rejection warning!\n${(err ? err.message : '') + stack}`);
+		} else {
+			errCb(err);
+		}
 	}
 
 	/**
@@ -189,6 +192,11 @@ class Oath {
 	static resolve(data) {
 		const q = new Oath();
 		q._changeState(Oath.RESOLVED, data);
+		return q;
+	}
+
+	static reject(err) {
+		const q = new Oath((res, rej) => rej(err));
 		return q;
 	}
 }
