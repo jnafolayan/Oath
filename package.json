@@ -1,0 +1,25 @@
+{
+  "name": "oath",
+  "version": "1.0.0",
+  "description": "An implementation of the native Promise API",
+  "main": "Oath.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jnafolayan/Oath.git"
+  },
+  "keywords": [
+    "promise",
+    "oath",
+    "api",
+    "callback"
+  ],
+  "author": "John Afolayan <jnafolayan@gmail.com> (jnafolayan.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jnafolayan/Oath/issues"
+  },
+  "homepage": "https://github.com/jnafolayan/Oath#readme"
+}
