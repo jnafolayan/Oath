@@ -77,7 +77,6 @@ class Oath {
 	 */
 	_callNext(data) {
 		const queue = this;
-		let next = this._next;
 
 		let isOath = data != null && data instanceof Oath;
 
@@ -88,27 +87,38 @@ class Oath {
 			// Perform hack
 			if (!data._getClosestErrorHandler())
 				data._prev = this;
-			data._next = next;
+			data._next = this._next;
 			this._next = data;
-			next = data;
 		}
 
-		if (next) {
-			if (isOath) {
-				data.then(proceed);
-			} else {
-				proceed(data);
+		let next = this._next;
+
+		execProceed();
+
+		function execProceed() {
+			if (next) {
+				if (isOath) {
+					// Do nothing: since the hack has been done above
+					// the Oath will call its proceed() itself in call to
+					// _callNext()
+				} else {
+					proceed(data);
+				}
 			}
 		}
 
 		function proceed(data) {
 			let result;
 			try {
-				result = next._cb(data);
+				result = typeof next._cb ? next._cb(data) : null;
 			} catch (error) {
+				// throw next._cb.toString();
 				queue._fail(error);
 			}
 			next._callNext(result);
+
+			// GC
+			next = null;
 		}
 	}
 
@@ -126,7 +136,7 @@ class Oath {
 
 		if (!errCb) {
 			const stack = new Error().stack;
-			console.error(`Unhandled rejection warning!\n${(err ? err.message : '') + stack}`);
+			console.error(`Unhandled rejection warning! ${(err ? err.message : '')} \n${stack}`);
 		} else {
 			errCb(err);
 		}
@@ -153,6 +163,10 @@ class Oath {
 	 * @protected
 	 */
 	then(callback) {
+		if (typeof callback !== 'function') {
+			throw 'Argument passed to Oath#then must be a function';
+		}
+
 		const q = new Oath();
 		q._cb = callback;
 		q._prev = this;
@@ -190,8 +204,7 @@ class Oath {
 	}
 
 	static resolve(data) {
-		const q = new Oath();
-		q._changeState(Oath.RESOLVED, data);
+		const q = new Oath((res, rej) => res(data));
 		return q;
 	}
 
