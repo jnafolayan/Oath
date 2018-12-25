@@ -212,4 +212,12 @@ class Oath {
 		const q = new Oath((res, rej) => rej(err));
 		return q;
 	}
+
+	static all(oaths) {
+		const comb = Oath.resolve();
+		for (let oath of oaths) {
+			comb.then(() => oath);
+		}
+		return comb;
+	}
 }
