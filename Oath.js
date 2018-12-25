@@ -214,10 +214,16 @@ class Oath {
 	}
 
 	static all(oaths) {
-		const comb = Oath.resolve();
-		for (let oath of oaths) {
-			comb.then(() => oath);
-		}
-		return comb;
+		let comb = Oath.resolve();
+		const retValues = [];
+
+		return oaths.reduce((comb, o) => {
+			return comb.then(() => o);
+		}, Promise.resolve());
 	}
 }
+
+
+
+Oath.all([Oath.resolve(10)])
+	.then(data => console.log(data))
