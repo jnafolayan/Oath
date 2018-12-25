@@ -217,13 +217,9 @@ class Oath {
 		let comb = Oath.resolve();
 		const retValues = [];
 
-		return oaths.reduce((comb, o) => {
-			return comb.then(() => o);
-		}, Promise.resolve());
+		return oaths.reduce((comb, o, i) => {
+			const oath = o.then(data => (retValues[i] = data) && data);
+			return comb.then(() => oath);
+		}, Promise.resolve()).then(() => retValues);
 	}
 }
-
-
-
-Oath.all([Oath.resolve(10)])
-	.then(data => console.log(data))
